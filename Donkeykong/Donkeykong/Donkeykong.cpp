@@ -4,79 +4,27 @@
 #include <Windows.h>
 #include <time.h>
 #include <string.h>
+#include "gamesystem.h"
+#include "mainmenu.h"
+#include "statemenu.h"
 
-#define WIDTH 80
-#define HEIGHT 25
-
-#define FPS 1000/30
+#define WIDTH 100
+#define HEIGHT 30
 
 #define BLOCK_MAX 20
 #define LEFT 75
 #define RIGHT 77
 #define UP 72
 #define DOWN 80
-#define MAX_BULLET 10
+#define MAX_BULLET 15
 #define MAX_STAR 50
 
-#pragma region 시스템
-void textcolor(int foreground, int background)
-{
-	int color = foreground + background * 16;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
-
-#pragma endregion
-
-#pragma region  색 상수
-// color상수 지정 
-#define BLACK 0 
-#define BLUE 1 
-#define GREEN 2 
-#define CYAN 3 
-#define RED 4 
-#define MAGENTA 5 
-#define BROWN 6 
-#define LIGHTGRAY 7 
-#define DARKGRAY 8 
-#define LIGHTBLUE 9 
-#define LIGHTGREEN 10 
-#define LIGHTCYAN 11 
-#define LIGHTRED 12 
-#define LIGHTMAGENTA 13 
-#define YELLOW 14 
-#define WHITE 15
-#pragma endregion
-
-#pragma region 게임 시스템 (좌표이동)
-void gotoXY(int x, int y)
-{
-	//x,y 좌표설정
-	COORD position = { x,y };
-
-	//커서 이동
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), position);
-}
-
-void CursorView(bool show)//커서 깜빡임
-{
-	HANDLE hConsole;
-	CONSOLE_CURSOR_INFO ConsoleCursor;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	ConsoleCursor.bVisible = show;
-	ConsoleCursor.dwSize = 1;
-	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
-}
-
-void Program_init() {
-	system("mode con cols=80 lines=25");
-	CursorView(0);
-}
-#pragma endregion
+int ct = 0;
 
 #pragma region 오브젝트 (캐릭터, 벽돌, 적)
 struct _Player {
 	int x = 10;
-	int y = 12;
+	int y = 15;
 	int speed = 1;
 	char shape[3] = "▶";
 };
@@ -88,6 +36,8 @@ struct _Bullet {
 	int speed = 4;
 	char shape[3] = "ㆍ";
 	bool exist = 0;
+#define ET 2
+	int effectTime = ET;
 };
 _Bullet bul[MAX_BULLET];
 
@@ -100,8 +50,46 @@ struct _Star {
 _Star star[MAX_STAR];
 #pragma endregion
 
+#pragma region 총알관련
+
+void bulletErase1(_Bullet* b) {
+	int t = ct;
+	gotoXY((*b).x, (*b).y);
+	puts("◎");
+	if (b->effectTime <=ET/2) {
+		gotoXY((*b).x, (*b).y);
+		puts("○");
+	}
+}
+void bulletMove(_Bullet* b) {
+	if ((*b).exist == 0) {
+		b->effectTime = ET;
+		(*b).x = player.x +2;
+		(*b).y = player.y;
+		b->speed = 3;
+	}
+	else {
+		textcolor(LIGHTCYAN, BLACK);
+		strcpy((*b).shape, "━");
+		gotoXY((*b).x, (*b).y);
+		printf("%s", (*b).shape);
+		(*b).x += b->speed;
+	}
+	//맵 이탈
+	if ((*b).x >= WIDTH - 4) {
+		strcpy((*b).shape, "0");
+		b->x = WIDTH - 4;
+		b->speed = 0;
+		bulletErase1(b);
+		b->effectTime--;
+	}
+	if(b->effectTime <= 0)
+		b->exist = 0;
+}
+#pragma endregion
+
 void starMove(_Star* s) {
-	if((*s).x >= player.x - 2 && (*s).x <= player.x+2 && (*s).y == player.y) strcpy((*s).shape, "");
+	if ((*s).x >= player.x - 2 && (*s).x <= player.x + 2 && (*s).y == player.y) strcpy((*s).shape, "");
 	else  strcpy((*s).shape, "ㆍ");
 	if ((*s).x < 2) {
 		(*s).x = WIDTH - 2;
@@ -112,54 +100,21 @@ void starMove(_Star* s) {
 	printf("%s", (*s).shape);
 	(*s).x -= 1;
 }
-#pragma region 총알관련
-void bulletErase1(_Bullet* b) {
-	gotoXY((*b).x, (*b).y);
-	puts("◎");
-}
-#pragma endregion
 
-
-void bulletMove(_Bullet* b) {
-	if ((*b).exist == 0) {
-		(*b).x = player.x+2;
-		(*b).y = player.y;
-	}
-	else {
-		textcolor(LIGHTCYAN, BLACK);
-		strcpy((*b).shape, "━");
-		gotoXY((*b).x, (*b).y);
-		printf("%s", (*b).shape);
-		(*b).x += 2;
-	}
-	if ((*b).x >= WIDTH - 2)bulletErase1(b), (*b).exist = 0;
-}
 void playerAction(int ct) {
-	char key;
-	if (_kbhit()) {
-		key = _getch();
-
-		switch (key)
-		{
-		case UP:
-			if(player.y > 1)
-			player.y -= player.speed;
-			break;
-		case DOWN:
-			if (player.y < HEIGHT-2)
-			player.y += player.speed;
-			break;
-		case LEFT:
-			if(player.x > 2)
-			player.x -= player.speed * 2;
-			break;
-		case RIGHT:
-			if (player.x < WIDTH-4)
-			player.x += player.speed * 2;
-			break;
-			
+	//캐릭터 이동
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000) { 
+			player.x-=2;
 		}
-	}
+		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) { 
+			player.x += 2;
+		}
+		if (GetAsyncKeyState(VK_UP) & 0x8000) { 
+			player.y--;
+		}
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) { 
+			player.y++;
+		}
 	//캐릭터 그리기
 	textcolor(WHITE, BLACK);
 	gotoXY(player.x, player.y);
@@ -177,9 +132,22 @@ void DrawBackground() {
 }
 int main() {
 	srand(time(NULL));
-	int ct = 0;
-	Program_init();
 	
+	Program_init();
+	//Stage 0 : 메인메뉴
+	while (1) {
+		mainPrint();
+		break;
+	}
+
+	//Stage 1 : 상태창 입력
+	while (1) {
+		//상태창 입력
+		system("cls");
+		stateMenu();
+	}
+
+	//Stage 1 : 게임 플레이
 	while (1) {
 		//enterFrame
 		Sleep(FPS);

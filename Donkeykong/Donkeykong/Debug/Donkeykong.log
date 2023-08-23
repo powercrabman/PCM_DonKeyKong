@@ -1,8 +1,11 @@
 ﻿  Donkeykong.cpp
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(54,21): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(54,23): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(104,75): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(105,8): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(130,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(179,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\gamesystem.h(42,21): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\gamesystem.h(42,23): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\mainmenu.h(20,13): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\statemenu.h(11,7): warning C4101: 'str': unreferenced local variable
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(73,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(80,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(92,78): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(93,8): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Donkeykong\Donkeykong.cpp(134,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Donkeykong.vcxproj -> C:\Users\Administrator\Desktop\test\PCM_DonKeyKong\Donkeykong\Debug\Donkeykong.exe
