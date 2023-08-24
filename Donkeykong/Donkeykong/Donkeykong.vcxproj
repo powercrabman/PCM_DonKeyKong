@@ -143,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gamesystem.h" />
+    <ClInclude Include="charactor.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="statemenu.h" />
     <ClInclude Include="mainmenu.h" />
   </ItemGroup>

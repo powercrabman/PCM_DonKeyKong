@@ -1,3 +1,5 @@
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -5,19 +7,5 @@
 #include <time.h>
 #include <string.h>
 
+#include "gamesystem.h"
 
-const char* stateMenu() {
-
-	char str[10];
-
-	puts("                                       ");
-	puts("     ==================================================     ");
-	puts("         플레이어의 이름을 기록해주세요!(최대 10자)     ");
-	puts("     ==================================================     ");
-	puts("                                       ");
-	puts("                                       ");
-	printf("    >>    ");
-
-	while (1);
-
-}
