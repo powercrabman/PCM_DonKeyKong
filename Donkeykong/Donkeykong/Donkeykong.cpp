@@ -19,7 +19,7 @@
 #define MAX_BULLET 20
 
 #define MAX_STAR 50
-#define ET 2
+#define ET 3
 
 #pragma region  색 상수
 #define BLACK 0 
@@ -116,13 +116,9 @@ struct _Bullet {
 _Bullet bul[MAX_BULLET];
 
 
-void bulletErase1(struct _Bullet* b) {
+void bulletErase1(struct _Bullet* b,const char* eff) {
 	gotoXY((*b).x, (*b).y);
-	puts("◎");
-	if (b->effectTime <= ET / 2) {
-		gotoXY((*b).x, (*b).y);
-		puts("○");
-	}
+	puts(eff);
 }
 void bulletMove(struct _Bullet* b) {
 	if ((*b).exist == 0) {
@@ -143,7 +139,12 @@ void bulletMove(struct _Bullet* b) {
 		strcpy((*b).shape, "");
 		b->x = WIDTH - 4;
 		b->speed = 0;
-		bulletErase1(b);
+
+		//총알 이펙트
+		if (b->effectTime == 3) bulletErase1(b,"⊙");
+		else if (b->effectTime == 2) bulletErase1(b, "◎");
+		else bulletErase1(b, "○");
+
 		b->effectTime--;
 	}
 	if (b->effectTime <= 0)
@@ -201,7 +202,7 @@ void playerSelect(int num) {
 		player.damage = 5;
 		player.shotSpeed = 6;
 		strcpy(player.shape, "◆");
-		strcpy(player.Bulletshape, "●");
+		strcpy(player.Bulletshape, "⊙");
 		player.BulletColor = LIGHTRED;
 		break;
 	}
@@ -212,17 +213,19 @@ void playerSelect(int num) {
 void playerAction(int ct) {
 	//캐릭터 이동
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-		if(player.x < WIDTH-4)
+		if(player.x > player.speed * 2)
 		player.x -= player.speed * 2;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-		if (player.x > 4)
+		if (player.x < WIDTH - player.speed * 2)
 		player.x += player.speed * 2;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000) {
+		if (player.y > player.speed * 2)
 		player.y -= player.speed;
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+		if (player.y < HEIGHT - player.speed * 2)
 		player.y += player.speed;
 	}
 	//캐릭터 그리기
@@ -406,43 +409,46 @@ void readfile(const char* str) {
 }
 
 void mainmenu1() {
-	puts("");
-	puts("");
-	puts("");
 	printf("					>  GAME START\n");
 	puts("");
-	printf("					      EXIT\n");
+	printf("					    RANKING\n");
 	puts("");
+	printf("					     EXIT\n");
 	puts("");
+
 	puts("");
-	puts("");
-	puts("");
-	puts("");
-	puts("				      ⓒ Made by Ahn Jiwoo");
+	puts("				     ⓒ Made by Ahn Jiwoo");
 }
 void mainmenu2() {
-	puts("");
-	puts("");
-	puts("");
 	printf("					   GAME START\n");
 	puts("");
-	printf("					>     EXIT\n");
+	printf("					>   RANKING\n");
 	puts("");
+	printf("					     EXIT\n");
 	puts("");
+
+
 	puts("");
-	puts("");
-	puts("");
-	puts("");
-	puts("				      ⓒ Made by Ahn Jiwoo");
+	puts("				     ⓒ Made by Ahn Jiwoo");
 }
 
+void mainmenu3() {
+	printf("					   GAME START\n");
+	puts("");
+	printf("					    RANKING\n");
+	puts("");
+	printf("					>    EXIT\n");
+	puts("");
+	puts("");
+	puts("				     ⓒ Made by Ahn Jiwoo");
+}
 
 int mainPrint()
 {
 	readfile("gametitle.txt");
 	//
 
-	printf("%s\n\n\n", titlebuffer);
+	printf("%s", titlebuffer);
 	mainmenu1();
 
 	int key;
@@ -450,30 +456,50 @@ int mainPrint()
 	while (1) {
 		if (_kbhit()) {
 			system("cls");
-			printf("%s\n\n\n", titlebuffer);
+			printf("%s", titlebuffer);
 
 			key = _getch();
 
 			switch (key) {
 			case UP:
-				mainmenu1();
-				menu = 1;
+				if (menu > 1)
+					menu--;
 				break;
 			case DOWN:
-				mainmenu2();
-				menu = 2;
+				if (menu < 3)
+					menu++;
 				break;
 			case ENTER:
-				if (menu == 1) return 0;
-				else exit(0);
-			default:
-				if (menu == 1) mainmenu1();
-				else mainmenu2();
+				switch (menu) {
+				case 1:
+					return 0;
+					break;
+				case 2: //랭킹
+					break;
+				case 3:
+					exit(0);
+				}
+			}
+
+			switch (menu) {
+			case 1:
+				mainmenu1();
+				break;
+			case 2: //랭킹
+				mainmenu2();
+				break;
+			case 3:
+				mainmenu3();
 			}
 		}
 	}
 }
 #pragma endregion
+
+#pragma region 인게임 UI
+
+#pragma endregion
+
 
 
 int main() {
@@ -489,6 +515,8 @@ int main() {
 		mainPrint();
 		break;
 	}
+
+	//랭킹창
 
 	//Stage 1 : 상태창 입력
 	while (1) {

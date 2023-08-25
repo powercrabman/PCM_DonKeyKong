@@ -1,0 +1,5 @@
+﻿  jwgame.cpp
+C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(15,21): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(15,23): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(106,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  jwgame.vcxproj -> C:\Users\Administrator\Desktop\test\jwgame\jwgame\Debug\jwgame.exe
