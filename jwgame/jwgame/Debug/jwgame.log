@@ -1,5 +1,5 @@
 ﻿  jwgame.cpp
-C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(15,21): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(15,23): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-C:\Users\Administrator\Desktop\test\jwgame\jwgame\jwgame.cpp(106,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
-  jwgame.vcxproj -> C:\Users\Administrator\Desktop\test\jwgame\jwgame\Debug\jwgame.exe
+C:\Users\안지우\Desktop\PCM_DonKeyKong\jwgame\jwgame\jwgame.cpp(15,21): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\안지우\Desktop\PCM_DonKeyKong\jwgame\jwgame\jwgame.cpp(15,23): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\안지우\Desktop\PCM_DonKeyKong\jwgame\jwgame\jwgame.cpp(122,13): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+  jwgame.vcxproj -> C:\Users\안지우\Desktop\PCM_DonKeyKong\jwgame\jwgame\Debug\jwgame.exe

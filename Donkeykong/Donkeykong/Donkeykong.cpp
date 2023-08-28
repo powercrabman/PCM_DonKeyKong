@@ -14,12 +14,15 @@
 #define WIDTH 100
 #define HEIGHT 30
 
-#define FPS 1000/30
+#define FPS 1000/60
 
 #define MAX_BULLET 20
 
 #define MAX_STAR 50
 #define ET 3
+
+#define TRUE 1
+#define FALSE 0
 
 #pragma region  색 상수
 #define BLACK 0 
@@ -41,9 +44,10 @@
 
 #pragma endregion
 
+#pragma region 전역변수모음
+int playerScore = 0; //플레이어 스코어
 
-
-int ct = 0;
+#pragma endregion
 
 //텍스트 색 변경
 void textcolor(int foreground, int background)
@@ -85,6 +89,7 @@ struct _Player {
 	//초기위치
 	int x = 10;
 	int y = 15;
+	int Maxlife; //3
 	int life; //3
 	int speed; //1
 	int damage;
@@ -102,53 +107,51 @@ struct _Star {
 	bool exist = 0;
 };
 _Star star[MAX_STAR];
-
-
 struct _Bullet {
 	int x = 0;
 	int y = 0;
 	int speed = 4;
 	char shape[3];
 	bool exist = 0;
-
 	int effectTime = ET;
+	int hitTest = FALSE;
 };
-_Bullet bul[MAX_BULLET];
+_Bullet bullet[MAX_BULLET];
 
-
-void bulletErase1(struct _Bullet* b,const char* eff) {
-	gotoXY((*b).x, (*b).y);
-	puts(eff);
+void bulletErase1(_Bullet *b,const char* str) {
+	gotoXY(b->x, b->y);
+	printf("%s", str);
 }
-void bulletMove(struct _Bullet* b) {
-	if ((*b).exist == 0) {
+void bulletMove(_Bullet* b) {
+	if (b->exist == 0) {
 		b->effectTime = ET;
-		(*b).x = player.x + 2;
-		(*b).y = player.y;
+		b->x = player.x + 2;
+		b->y = player.y;
 		b->speed = 3;
+		b->hitTest = FALSE;
 	}
 	else {
 		textcolor(player.BulletColor, BLACK);
-		strcpy((*b).shape, player.Bulletshape);
-		gotoXY((*b).x, (*b).y);
-		printf("%s", (*b).shape);
-		(*b).x += b->speed;
+		strcpy(b->shape, player.Bulletshape);
+		gotoXY(b->x, b->y);
+		printf("%s", b->shape);
+		b->x += b->speed;
 	}
 	//맵 이탈
-	if ((*b).x >= WIDTH - 4) {
-		strcpy((*b).shape, "");
-		b->x = WIDTH - 4;
+	if (b->x >= WIDTH - 4||b->hitTest == TRUE) {
+		strcpy(b->shape, "");
 		b->speed = 0;
-
+	
 		//총알 이펙트
 		if (b->effectTime == 3) bulletErase1(b,"⊙");
 		else if (b->effectTime == 2) bulletErase1(b, "◎");
 		else bulletErase1(b, "○");
-
+	
 		b->effectTime--;
 	}
 	if (b->effectTime <= 0)
 		b->exist = 0;
+
 }
 
 void starMove(_Star* s) {
@@ -179,6 +182,7 @@ void playerSelect(int num) {
 
 	switch (num) {
 	case dead:
+		player.Maxlife = 5;
 		player.life = 5;
 		player.speed = 1;
 		player.damage = 4;
@@ -188,6 +192,7 @@ void playerSelect(int num) {
 		player.BulletColor = LIGHTCYAN;
 		break;
 	case hawk:
+		player.Maxlife = 3;
 		player.life = 3;
 		player.speed = 1;
 		player.damage = 3;
@@ -197,20 +202,20 @@ void playerSelect(int num) {
 		player.BulletColor = YELLOW;
 		break;
 	case hera:
+		player.Maxlife = 4;
 		player.life = 4;
 		player.speed = 1;
 		player.damage = 5;
 		player.shotSpeed = 6;
 		strcpy(player.shape, "◆");
 		strcpy(player.Bulletshape, "⊙");
-		player.BulletColor = LIGHTRED;
+		player.BulletColor = WHITE;
 		break;
 	}
 }
 
-
-
 void playerAction(int ct) {
+	static int num=0;
 	//캐릭터 이동
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
 		if(player.x > player.speed * 2)
@@ -221,11 +226,11 @@ void playerAction(int ct) {
 		player.x += player.speed * 2;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000) {
-		if (player.y > player.speed * 2)
+		if (player.y > player.speed * 2 +1)
 		player.y -= player.speed;
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-		if (player.y < HEIGHT - player.speed * 2)
+		if (player.y < HEIGHT - player.speed * 2 - 1)
 		player.y += player.speed;
 	}
 	//캐릭터 그리기
@@ -234,10 +239,20 @@ void playerAction(int ct) {
 	printf("%s", player.shape);
 
 	//총쏘기
-	for (int i = 0; i < MAX_BULLET; i++)
-		bulletMove(&bul[i]);
+	
+	
 
-	bul[ct / player.shotSpeed % MAX_BULLET].exist = 1;
+	//총알 생성
+	if (ct % player.shotSpeed == 0) {
+		bullet[num].exist = 1;
+		num = (num + 1) % MAX_BULLET;
+	}
+	
+	for (int i = 0; i < MAX_BULLET; i++) {
+		bulletMove(&bullet[i]);
+
+	}
+
 }
 #pragma endregion
 
@@ -497,7 +512,124 @@ int mainPrint()
 #pragma endregion
 
 #pragma region 인게임 UI
+void printLife(int life, int lifeMAX) {
+	for (int i = 0; i < lifeMAX; i++)
+		if (i < life)
+			printf("♥");
+		else printf("♡");
+}
+void DrawInGameUI(int life, int lifeMax, const char* playerName, int score) {
+	textcolor(LIGHTGRAY, BLACK);
+	gotoXY(0, 0);
+	
+	puts(" ==================================================================================================");
+	printf("  1P: %s    Life: ", playerName);
+	printLife(life, lifeMax);
+	printf("    %s %d", "Score: ", score);
 
+	gotoXY(1, 27);
+	puts("");
+	puts(" ==================================================================================================");
+
+}
+#pragma endregion
+
+void scorePrinter(int score,int x,int y) {
+	gotoXY(x, y);
+	printf("%d", score);
+}
+
+#pragma region 적
+struct _enemy {
+	int x;
+	int y;
+	//기본적인 정보
+	int life;
+	int speed;
+	int exist = FALSE;
+	char shape[3];
+	int patterntime;
+	char color;
+	int dieEvent;
+	int score ;
+};
+#define urosNum 10
+_enemy ur[urosNum];
+
+void DieEffect(int x, int y, const char* str) {
+	textcolor(LIGHTRED, BLACK);
+	gotoXY(x, y);
+	printf("%s", str);
+}
+
+//우로스: 상하로 지그재그 움직이는 몬스터
+void urosAction(_enemy* uros){
+	//프레임로드
+	if (uros->exist == FALSE) {
+		uros->dieEvent = 6;
+		uros->x = WIDTH - 4;
+		uros->y = 2 + rand() % (HEIGHT-4);
+		uros->life = 20;
+		uros->speed = 0;
+		strcpy(uros->shape, "");
+		uros->patterntime = 0;
+		uros->color = LIGHTRED;
+		uros->score = 100;
+	}
+	//엔터프레임
+	else if(uros->life >0){
+		uros->patterntime++;
+		textcolor(uros->color, BLACK);
+		strcpy(uros->shape, "◐");
+		uros->speed = 1;
+		
+		if (uros->patterntime % 4 == 0) {
+			uros->x -= uros->speed;
+			if (uros->patterntime < 20)
+				uros->y -= uros->speed;
+			else if (uros->patterntime < 40)
+				uros->y += uros->speed;
+			else uros->patterntime = 0;
+		}
+
+		//벽
+		while (uros->y < 3) uros->y++;
+		while (uros->y > HEIGHT-3) uros->y--;
+		if(uros->x <= 2) uros->x = WIDTH - 4;
+
+		//goto
+		gotoXY(uros->x, uros->y);
+		printf("%s", uros->shape);
+
+		//총알충돌판정
+		for (int i = 0; i < MAX_BULLET; i++) {
+			if (bullet[i].hitTest == FALSE && bullet[i].x <= uros->x && bullet[i].x >= uros->x - 1 && bullet[i].y <= uros->y + 1 && bullet[i].y >= uros->y - 1)
+				bullet[i].hitTest = TRUE, uros->life -= player.damage, bullet[i].x -= 2;
+		}
+	}	else	if (uros->life <= 0) {
+		uros->speed = 0;
+		strcpy(uros->shape, "");
+		uros->dieEvent--;
+		if (uros->dieEvent > 0) {
+			scorePrinter(uros->score, uros->x-1, uros->y - 1);
+			DieEffect(uros->x, uros->y, "○");
+		}
+		else playerScore += uros->score, uros->exist = FALSE;
+	}
+}
+
+void enemySystem(int ct) {
+	//urosAction(&ur);
+	//ur.exist = TRUE;
+	static int num = 0;
+
+	if (ct > 10 && ct%30 == 0) {
+		ur[num].exist = TRUE;
+		num = (num + 1) % urosNum;
+	}
+	for (int i = 0; i < urosNum; i++)
+		urosAction(&ur[i]);
+}
 #pragma endregion
 
 
@@ -508,7 +640,6 @@ int main() {
 	Program_init();
 
 	char playerName[11];
-	int playerScore = 0;
 	int playerSelectNum;
 	//Stage 0 : 메인메뉴
 	while (1) {
@@ -525,9 +656,10 @@ int main() {
 		stateMenu(playerName);
 		break;
 	}
-
-	playerScore = 0;
+	
 	//Stage 2 : 게임 플레이
+	playerScore = 0;
+	int ct = 0;
 	while (1) {
 		//enterFrame
 		Sleep(FPS);
@@ -535,6 +667,8 @@ int main() {
 		system("cls");
 		playerAction(ct);
 		DrawBackground();
+		enemySystem(ct);
+		DrawInGameUI(player.life, player.Maxlife, playerName, playerScore);
 	}
 
 	return 0;

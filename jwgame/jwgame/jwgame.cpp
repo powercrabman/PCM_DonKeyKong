@@ -38,7 +38,7 @@ void Program_init() {
 
 #define QMAX 4
 
-enum itemcode { NoItem = 0 , ShotSpeedUp, DamageUp, ShotUpgrade, Satellite };
+enum itemcode { NoItem = 0, ShotSpeedUp, DamageUp, ShotUpgrade, Satellite };
 
 
 struct _itemQ {
@@ -48,7 +48,7 @@ struct _itemQ {
 };
 
 int is_full(_itemQ* Q) {
-	return (Q->rear+1)%QMAX == Q->front;
+	return (Q->rear + 1) % QMAX == Q->front;
 }
 
 int is_empty(_itemQ* Q) {
@@ -84,8 +84,24 @@ void printLife(int life, int lifeMAX) {
 		else printf("¢½");
 }
 void printItem(_itemQ* Q) {
-	for(int i = Q->front;i != Q->rear;i = (i+1)%QMAX){
-		printf("%d ",i);
+	for (int i = Q->front; i != Q->rear; i = (i + 1) % QMAX) {
+		switch (Q->itemQ[i]){
+		case NoItem:
+			printf("NoItem ");
+			break;
+		case ShotSpeedUp:
+			printf("ShotSpeedUp ");
+			break;
+		case ShotUpgrade:
+			printf("ShotUpgrade ");
+			break;
+		case DamageUp:
+			printf("DamageUp ");
+			break;
+		case Satellite:
+			printf("Satellite ");
+			break;
+			}
 	}
 }
 
