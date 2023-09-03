@@ -122,6 +122,7 @@ int rankingUI() {
 	if (0 == fopen_s(&fptr, "gamedata.sav", "r")) {
 		for (int i = 0; i < DataMax; i++) {
 			rankData[i].id = 0;
+
 			strcpy(rankData[i].name,"");
 			rankData[i].score = 0;
 			rankDataNum = 0;
@@ -150,7 +151,7 @@ int rankingUI() {
 		gotoXY(x, y++);
 		printf("\t순위 \tPlayerID\t플레이어 이름\t\t점수\t\t\t");
 		gotoXY(x, y++);
-		for (int i = 0; i < rankDataNum; i++) {
+		for (int i = 0; i < rankDataNum && i<10; i++) {
 			gotoXY(x, y++);
 			printf("%5d 위 %8d %16s%21d ",i+1, rankData[i].id, rankData[i].name, rankData[i].score);
 		}
@@ -1278,20 +1279,24 @@ int main() {
 		//enterFrame
 		Sleep(FPS);
 		ct++;
+
 		system("cls");
 		playerAction(ct);
 		DrawBackground();
 		enemySystem(ct);
 		DrawInGameUI(player.life, player.Maxlife, playerName, playerScore);
+		
+		//사망조건
 		if (player.life <= 0) {
 			gameover = TRUE;
 			break;
 		}
-
+		char key;
 		if (_kbhit()) {
 			if ((key = _getch()) == ENTER) break;
 		}
-		if (ct >= 940) {//클리어
+		//클리어조건
+		if (ct >= 940) {
 			break;
 		}
 	}
@@ -1383,7 +1388,6 @@ int main() {
 }
 
 int playerHitTest() {
-	//우로스와의 충돌
 	for (int i = 0; i < urosNum; i++) {
 		if (player.x >= ur[i].x - 3 && player.x <= ur[i].x + 3 && player.y == ur[i].y)
 			return TRUE;
